@@ -2,7 +2,7 @@
 
 A reproducible backtesting project that asks a simple question: can investor sentiment improve long-term monthly accumulation relative to standard dollar cost averaging?
 
-The project began as a fixed S&P 500 experiment and developed into a reusable Yahoo Finance ticker analyzer. The research progression is preserved in `research/`, while the portfolio-ready analyzer is in `notebooks/`.
+The project began as a fixed S&P 500 experiment and developed into a reusable Yahoo Finance ticker analyzer. The research progression is preserved in `research/`, while the portfolio-ready analyzer is in `notebooks/` and the reusable strategy engine is in `src/`.
 
 ## Research question
 
@@ -18,12 +18,13 @@ Does changing monthly investment size using the Fear & Greed Index, asset drawdo
 
 ## Research evolution
 
-The project developed through four structural stages rather than through post-hoc parameter tuning.
+The project developed through structural stages rather than post-hoc parameter tuning.
 
 1. **Sentiment weighting:** tested whether Fear & Greed alone could improve monthly S&P 500 contribution timing.
-2. **Drawdown confirmation:** added market drawdown as a second condition after the sentiment-only strategy showed that fear does not necessarily mean the market is cheap.
+2. **Drawdown confirmation:** added market drawdown after the sentiment-only strategy showed that fear does not necessarily mean the market is cheap.
 3. **Dedicated reserve:** changed the capital-management structure after the drawdown strategy frequently lacked cash when its strongest signals arrived.
-4. **Generalized analyzer:** converted the S&P 500 research into a reusable Yahoo Finance ticker tool with deterministic interpretation, long-history robustness, cash-yield sensitivity, reserve-allocation sensitivity, and market-context warnings for non-US securities.
+4. **Robustness and cash yield:** tested longer history, predefined reserve allocations, and a Treasury cash-rate proxy without changing the central hypothesis.
+5. **Generalized analyzer:** converted the S&P 500 research into a reusable Yahoo Finance ticker tool with deterministic interpretation and market-context warnings for non-US securities.
 
 See [`docs/RESEARCH_EVOLUTION.md`](docs/RESEARCH_EVOLUTION.md) for the full rationale and evidence chain.
 
@@ -46,7 +47,7 @@ The main result is a disciplined negative finding: the timing overlays changed e
 1. Sentiment alone withheld capital during Greed and attempted to deploy more during Fear.
 2. Drawdown confirmation improved the signal but exposed an execution problem because the strategy often had insufficient accumulated cash during strong signals.
 3. The tactical reserve solved the cash-availability problem by deliberately creating dry powder every month, but too much reserve remained idle and reduced long-term wealth accumulation.
-4. Treasury cash yield narrowed the gap but did not overturn the primary ranking.
+4. Treasury cash yield narrowed the gap but did not overturn the primary SPY ranking.
 5. The final analyzer generalized the framework to arbitrary Yahoo Finance symbols and added deterministic rules-based summaries rather than AI-generated interpretation.
 
 ## Ticker analyzer
@@ -74,6 +75,8 @@ QQQ
 ```
 
 Then run the notebook from top to bottom.
+
+The core simulation and performance calculations are separated into `src/fear_greed_engine.py` so the strategy logic can be reviewed independently of the notebook presentation layer.
 
 ## Non-US market context
 
@@ -116,6 +119,9 @@ The validation runs confirm that the ticker engine, Yahoo suffix handling, strat
 ├── requirements.txt
 ├── notebooks/
 │   └── Fear_Greed_Ticker_Strategy_Analyzer.ipynb
+├── src/
+│   ├── __init__.py
+│   └── fear_greed_engine.py
 ├── research/
 │   ├── 01_sentiment_weighted.md
 │   ├── 02_sentiment_drawdown.md
